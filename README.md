@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-    <svg src="./.screens/gopher.svg" width="50%" />
+    <img src="./.screens/gopher.svg" width="50%" />
 </p>
 
 <p align="center">
