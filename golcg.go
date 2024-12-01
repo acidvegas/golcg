@@ -1,42 +1,40 @@
-package main
+package golcg
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"math/rand"
 	"net"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 )
 
 type LCG struct {
-	m       uint32
-	a       uint32
-	c       uint32
-	current uint32
+	M       uint32
+	A       uint32
+	C       uint32
+	Current uint32
 }
 
 func NewLCG(seed int, m uint32) *LCG {
 	return &LCG{
-		m:       m,
-		a:       1664525,
-		c:       1013904223,
-		current: uint32(seed),
+		M:       m,
+		A:       1664525,
+		C:       1013904223,
+		Current: uint32(seed),
 	}
 }
 
 func (l *LCG) Next() uint32 {
-	l.current = (l.a*l.current + l.c) % l.m
-	return l.current
+	l.Current = (l.A*l.Current + l.C) % l.M
+	return l.Current
 }
 
 type IPRange struct {
-	start uint32
-	total uint32
+	Start uint32
+	Total uint32
 }
 
 func NewIPRange(cidr string) (*IPRange, error) {
@@ -52,17 +50,17 @@ func NewIPRange(cidr string) (*IPRange, error) {
 	total := broadcast - start + 1
 
 	return &IPRange{
-		start: start,
-		total: uint32(total),
+		Start: start,
+		Total: uint32(total),
 	}, nil
 }
 
 func (r *IPRange) GetIPAtIndex(index uint32) (string, error) {
-	if index >= r.total {
+	if index >= r.Total {
 		return "", errors.New("IP index out of range")
 	}
 
-	ip := uint32ToIP(r.start + index)
+	ip := uint32ToIP(r.Start + index)
 	return ip.String(), nil
 }
 
@@ -102,12 +100,12 @@ func IPStream(cidr string, shardNum, totalShards, seed int, state *uint32) (<-ch
 
 	lcg := NewLCG(seed+shardIndex, 1<<32-1)
 	if state != nil {
-		lcg.current = *state
+		lcg.Current = *state
 	}
 
-	shardSize := ipRange.total / uint32(totalShards)
+	shardSize := ipRange.Total / uint32(totalShards)
 
-	if uint32(shardIndex) < (ipRange.total % uint32(totalShards)) {
+	if uint32(shardIndex) < (ipRange.Total % uint32(totalShards)) {
 		shardSize++
 	}
 
@@ -117,7 +115,7 @@ func IPStream(cidr string, shardNum, totalShards, seed int, state *uint32) (<-ch
 		remaining := shardSize
 
 		for remaining > 0 {
-			index := lcg.Next() % ipRange.total
+			index := lcg.Next() % ipRange.Total
 			if totalShards == 1 || index%uint32(totalShards) == uint32(shardIndex) {
 				ip, err := ipRange.GetIPAtIndex(index)
 				if err != nil {
@@ -127,47 +125,11 @@ func IPStream(cidr string, shardNum, totalShards, seed int, state *uint32) (<-ch
 				remaining--
 
 				if remaining%1000 == 0 {
-					SaveState(seed, cidr, shardNum, totalShards, lcg.current)
+					SaveState(seed, cidr, shardNum, totalShards, lcg.Current)
 				}
 			}
 		}
 	}()
 
 	return out, nil
-}
-
-func main() {
-	cidr := flag.String("cidr", "", "Target IP range in CIDR format")
-	shardNum := flag.Int("shard-num", 1, "Shard number (1-based)")
-	totalShards := flag.Int("total-shards", 1, "Total number of shards")
-	seed := flag.Int("seed", 0, "Random seed for LCG")
-	stateStr := flag.String("state", "", "Resume from specific LCG state")
-	flag.Parse()
-
-	if *cidr == "" {
-		fmt.Println("Error: CIDR is required")
-		flag.Usage()
-		os.Exit(1)
-	}
-
-	var state *uint32
-	if *stateStr != "" {
-		stateVal, err := strconv.ParseUint(*stateStr, 10, 32)
-		if err != nil {
-			fmt.Printf("Error parsing state: %v\n", err)
-			os.Exit(1)
-		}
-		stateUint32 := uint32(stateVal)
-		state = &stateUint32
-	}
-
-	stream, err := IPStream(*cidr, *shardNum, *totalShards, *seed, state)
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		os.Exit(1)
-	}
-
-	for ip := range stream {
-		fmt.Println(ip)
-	}
 }

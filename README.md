@@ -19,7 +19,7 @@
 
 ## Installation 
 ```bash
-go install github.com/acidvegas/golcg
+go install github.com/acidvegas/golcg/cmd/golcg@latest
 ```
 
 ## Usage
@@ -91,7 +91,6 @@ Every IPv4 address is fundamentally a 32-bit number. For example, the IP address
 192.168.1.1 = (192 × 256³) + (168 × 256²) + (1 × 256¹) + (1 × 256⁰)
              = 3232235777
 ```
-
 This integer representation allows us to treat IP ranges as simple number sequences. A CIDR block like "192.168.0.0/16" becomes a continuous range of integers:
 - Start: 192.168.0.0   → 3232235520
 - End:   192.168.255.255 → 3232301055
@@ -143,3 +142,4 @@ The sharding system employs an interleaved approach that ensures even distributi
 ---
 
 ###### Mirrors: [acid.vegas](https://git.acid.vegas/golcg) • [SuperNETs](https://git.supernets.org/acidvegas/golcg) • [GitHub](https://github.com/acidvegas/golcg) • [GitLab](https://gitlab.com/acidvegas/golcg) • [Codeberg](https://codeberg.org/acidvegas/golcg)
+
