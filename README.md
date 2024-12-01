@@ -1,5 +1,9 @@
-# golcg
-Linear Congruential Generator for scanning IP ranges in Go.
+<p align="center">
+    <h1>GoLCG</h1>
+    <img src="./.screens/gopher.svg" alt="golcg" />
+    <h3>Linear Congruential Generator for scanning IP ranges in Go</h3>
+</p>
+
 
 ## Features
 * Memory efficient IP range scanning
