@@ -7,6 +7,9 @@
 <h3 align="center">Linear Congruential Generator for scanning IP ranges in Go</h3>
 
 
+###### A Python version of this project is also available [here](https://github.com/acidvegas/pylcg)
+
+
 ## Features
 * Memory efficient IP range scanning
 * Deterministic random IP generation
