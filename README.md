@@ -1,14 +1,10 @@
-<p align="center">
-    <h1>GoLCG</h1>
-</p>
+<h1 align="center">GoLCG</h1>
 
 <p align="center">
     <img src="./.screens/gopher.svg" width="50%" />
 </p>
 
-<p align="center">
-    <h3>Linear Congruential Generator for scanning IP ranges in Go</h3>
-</p>
+<h3 align="center">Linear Congruential Generator for scanning IP ranges in Go</h3>
 
 
 ## Features
