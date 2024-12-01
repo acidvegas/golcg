@@ -1,0 +1,15 @@
+# State files
+*.state
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# IDE specific (optional, but common)
+.idea/
+.vscode/ 
