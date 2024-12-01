@@ -1,6 +1,6 @@
 <p align="center">
     <h1>GoLCG</h1>
-    <img src="./.screens/gopher.svg" alt="golcg" />
+    <img src="./.screens/gopher.svg" alt="golcg" width="72.08mm" height="64.83mm" />
     <h3>Linear Congruential Generator for scanning IP ranges in Go</h3>
 </p>
 
