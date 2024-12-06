@@ -20,7 +20,7 @@ type LCG struct {
 
 func NewLCG(seed int, m uint32) *LCG {
 	return &LCG{
-		M:       m,
+		M:       1<<32 - 1,
 		A:       1664525,
 		C:       1013904223,
 		Current: uint32(seed),
@@ -46,17 +46,22 @@ func NewIPRange(cidr string) (*IPRange, error) {
 	start := ipToUint32(network.IP)
 	ones, bits := network.Mask.Size()
 	hostBits := uint(bits - ones)
-	broadcast := start | (1<<hostBits - 1)
-	total := broadcast - start + 1
+
+	var total uint32
+	if hostBits == 32 {
+		total = 0
+	} else {
+		total = 1 << hostBits
+	}
 
 	return &IPRange{
 		Start: start,
-		Total: uint32(total),
+		Total: total,
 	}, nil
 }
 
 func (r *IPRange) GetIPAtIndex(index uint32) (string, error) {
-	if index >= r.Total {
+	if r.Total > 0 && index >= r.Total {
 		return "", errors.New("IP index out of range")
 	}
 
@@ -79,7 +84,7 @@ func uint32ToIP(n uint32) net.IP {
 }
 
 func SaveState(seed int, cidr string, shard int, total int, lcgCurrent uint32) error {
-	fileName := fmt.Sprintf("pylcg_%d_%s_%d_%d.state", seed, strings.Replace(cidr, "/", "_", -1), shard, total)
+	fileName := fmt.Sprintf("golcg_%d_%s_%d_%d.state", seed, strings.Replace(cidr, "/", "_", -1), shard, total)
 	stateFile := filepath.Join(os.TempDir(), fileName)
 
 	return os.WriteFile(stateFile, []byte(fmt.Sprintf("%d", lcgCurrent)), 0644)
@@ -103,19 +108,33 @@ func IPStream(cidr string, shardNum, totalShards, seed int, state *uint32) (<-ch
 		lcg.Current = *state
 	}
 
-	shardSize := ipRange.Total / uint32(totalShards)
-
-	if uint32(shardIndex) < (ipRange.Total % uint32(totalShards)) {
-		shardSize++
+	var shardSize uint32
+	if ipRange.Total == 0 {
+		shardSize = (1<<32 - 1) / uint32(totalShards)
+		if uint32(shardIndex) < uint32(totalShards-1) {
+			shardSize++
+		}
+	} else {
+		shardSize = ipRange.Total / uint32(totalShards)
+		if uint32(shardIndex) < ipRange.Total%uint32(totalShards) {
+			shardSize++
+		}
 	}
 
-	out := make(chan string)
+	out := make(chan string, 1000)
 	go func() {
 		defer close(out)
 		remaining := shardSize
 
 		for remaining > 0 {
-			index := lcg.Next() % ipRange.Total
+			next := lcg.Next()
+			var index uint32
+			if ipRange.Total > 0 {
+				index = next % ipRange.Total
+			} else {
+				index = next
+			}
+
 			if totalShards == 1 || index%uint32(totalShards) == uint32(shardIndex) {
 				ip, err := ipRange.GetIPAtIndex(index)
 				if err != nil {

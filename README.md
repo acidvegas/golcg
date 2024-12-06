@@ -24,17 +24,16 @@ go install github.com/acidvegas/golcg/cmd/golcg@latest
 
 ## Usage
 ```bash
-golcg -cidr CIDR [-shard-num N] [-total-shards N] [-seed N] [-state STATE]
+golcg -cidr CIDR [-shard INDEX/TOTAL] [-seed N] [-state STATE]
 ```
 
 ## Arguments
-| Argument        | Description                   |
-| --------------- | ----------------------------- |
-| `-cidr`         | The CIDR range to scan        |
-| `-shard-num`    | The shard number to generate  |
-| `-total-shards` | The total number of shards    |
-| `-seed`         | The seed for the LCG          |
-| `-state`        | The state file to resume from |
+| Argument  | Description                                           |
+| --------- | ----------------------------------------------------- |
+| `-cidr`   | The CIDR range to scan                                |
+| `-shard`  | Shard specification in INDEX/TOTAL format (e.g., 1/4) |
+| `-seed`   | The seed for the LCG                                  |
+| `-state`  | The state file to resume from                         |
 
 ## Examples
 ```bash
@@ -47,8 +46,8 @@ golcg -cidr 172.16.0.0/12
 golcg -cidr 192.168.0.0/16
 
 # Distributed scanning (2 shards)
-golcg -cidr 0.0.0.0/0 -shard-num 1 -total-shards 2 # One machine
-golcg -cidr 0.0.0.0/0 -shard-num 2 -total-shards 2 # Second machine
+golcg -cidr 0.0.0.0/0 -shard 1/2  # One machine
+golcg -cidr 0.0.0.0/0 -shard 2/2  # Second machine
 ```
 
 ## State Management & Resume Capability
@@ -77,7 +76,7 @@ Example of resuming:
 state=$(cat /tmp/golcg_12345_192.168.0.0_16_1_4.state)
 
 # Resume processing
-golcg 192.168.0.0/16 --shard-num 1 --total-shards 4 --seed 12345 --state $state
+golcg -cidr 192.168.0.0/16 -shard 1/4 -seed 12345 -state $state
 ```
 
 Note: When using the `--state` parameter, you must provide the same `--seed` that was used in the original run.
@@ -142,4 +141,3 @@ The sharding system employs an interleaved approach that ensures even distributi
 ---
 
 ###### Mirrors: [acid.vegas](https://git.acid.vegas/golcg) • [SuperNETs](https://git.supernets.org/acidvegas/golcg) • [GitHub](https://github.com/acidvegas/golcg) • [GitLab](https://gitlab.com/acidvegas/golcg) • [Codeberg](https://codeberg.org/acidvegas/golcg)
-
