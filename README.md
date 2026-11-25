@@ -6,6 +6,9 @@
 
 <h3 align="center">Linear Congruential Generator for scanning IP ranges in Go</h3>
 
+> [!WARNING]
+> This project is no longer maintained and has been archived. Use [CLCG](https://github.com/acidvegas/clcg) instead.
+
 
 ###### A Python version of this project is also available [here](https://github.com/acidvegas/pylcg)
 
@@ -28,12 +31,12 @@ golcg -cidr CIDR [-shard INDEX/TOTAL] [-seed N] [-state STATE]
 ```
 
 ## Arguments
-| Argument  | Description                                           |
-| --------- | ----------------------------------------------------- |
-| `-cidr`   | The CIDR range to scan                                |
-| `-shard`  | Shard specification in INDEX/TOTAL format (e.g., 1/4) |
-| `-seed`   | The seed for the LCG                                  |
-| `-state`  | The state file to resume from                         |
+| Argument | Description                                           |
+|----------|-------------------------------------------------------|
+| `-cidr`  | The CIDR range to scan                                |
+| `-shard` | Shard specification in INDEX/TOTAL format (e.g., 1/4) |
+| `-seed`  | The seed for the LCG                                  |
+| `-state` | The state file to resume from                         |
 
 ## Examples
 ```bash
