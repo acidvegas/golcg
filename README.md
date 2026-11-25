@@ -31,12 +31,12 @@ golcg -cidr CIDR [-shard INDEX/TOTAL] [-seed N] [-state STATE]
 ```
 
 ## Arguments
-| Argument | Description                                           |
-|----------|-------------------------------------------------------|
-| `-cidr`  | The CIDR range to scan                                |
-| `-shard` | Shard specification in INDEX/TOTAL format (e.g., 1/4) |
-| `-seed`  | The seed for the LCG                                  |
-| `-state` | The state file to resume from                         |
+| Argument  | Description                                           |
+| --------- | ----------------------------------------------------- |
+| `-cidr`   | The CIDR range to scan                                |
+| `-shard`  | Shard specification in INDEX/TOTAL format (e.g., 1/4) |
+| `-seed`   | The seed for the LCG                                  |
+| `-state`  | The state file to resume from                         |
 
 ## Examples
 ```bash
